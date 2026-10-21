@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bgDefCat" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5F5F4" />
+      <stop offset="100%" stop-color="#E7E5E4" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="24" fill="url(#bgDefCat)" />
+  <!-- Shopping Basket -->
+  <path d="M26 44 L74 44 L68 76 C67 80 33 80 32 76 Z" fill="#C2410C" opacity="0.9" />
+  <path d="M36 44 L50 24 L64 44" fill="none" stroke="#C2410C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  <!-- Grid stripes on basket -->
+  <line x1="42" y1="50" x2="40" y2="72" stroke="#FFFFFF" stroke-width="2" opacity="0.4" />
+  <line x1="50" y1="50" x2="50" y2="72" stroke="#FFFFFF" stroke-width="2" opacity="0.4" />
+  <line x1="58" y1="50" x2="60" y2="72" stroke="#FFFFFF" stroke-width="2" opacity="0.4" />
+</svg>

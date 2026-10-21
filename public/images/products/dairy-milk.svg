@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgSilk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E8FF" />
+      <stop offset="100%" stop-color="#E9D5FF" />
+    </linearGradient>
+    <linearGradient id="silkPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3B0764" />
+      <stop offset="50%" stop-color="#581C87" />
+      <stop offset="100%" stop-color="#6B21A8" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgSilk)" />
+  <!-- Chocolate Slab Bar Packet -->
+  <rect x="36" y="24" width="68" height="92" rx="6" fill="url(#silkPurple)" stroke="#2E1065" stroke-width="2" />
+  <!-- Golden Milk Swirl Crest -->
+  <path d="M48 38 Q70 30 92 38" fill="none" stroke="#F59E0B" stroke-width="1.5" />
+  <circle cx="70" cy="34" r="3" fill="#F59E0B" />
+  <!-- Cadbury Logo -->
+  <text x="70" y="48" font-family="cursive, serif" font-size="7" font-weight="bold" fill="#F59E0B" text-anchor="middle" font-style="italic">Cadbury</text>
+  <!-- Dairy Milk Title -->
+  <text x="70" y="60" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#FFFFFF" text-anchor="middle">Dairy Milk</text>
+  <!-- SILK Banner -->
+  <rect x="44" y="66" width="52" height="14" rx="4" fill="#D97706" />
+  <text x="70" y="76.5" font-family="serif, system-ui" font-size="9" font-weight="900" fill="#FFFBEB" text-anchor="middle" letter-spacing="1">SILK</text>
+  <!-- Chocolate chunk illustration -->
+  <rect x="54" y="86" width="14" height="14" rx="2" fill="#78350F" stroke="#451A03" stroke-width="1" />
+  <rect x="72" y="86" width="14" height="14" rx="2" fill="#78350F" stroke="#451A03" stroke-width="1" />
+  <text x="70" y="110" font-family="monospace" font-size="6" font-weight="bold" fill="#E9D5FF" text-anchor="middle">60g</text>
+</svg>

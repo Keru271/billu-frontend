@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgTea" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DCFCE7" />
+      <stop offset="100%" stop-color="#BBF7D0" />
+    </linearGradient>
+    <linearGradient id="teaPack" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14532D" />
+      <stop offset="50%" stop-color="#166534" />
+      <stop offset="100%" stop-color="#15803D" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgTea)" />
+  <!-- Tea Pouch Packet -->
+  <path d="M36 24 C36 20 104 20 104 24 L100 116 C100 120 40 120 40 116 Z" fill="url(#teaPack)" stroke="#052E16" stroke-width="2" />
+  <!-- Gold Top Crest -->
+  <path d="M42 30 L98 30 L94 44 L46 44 Z" fill="#F59E0B" />
+  <!-- TATA Brand Red Box -->
+  <rect x="52" y="34" width="36" height="14" rx="2" fill="#DC2626" />
+  <text x="70" y="44" font-family="system-ui, sans-serif" font-size="8.5" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="0.5">TATA</text>
+  <!-- TEA PREMIUM -->
+  <text x="70" y="58" font-family="system-ui, sans-serif" font-size="9" font-weight="900" fill="#FEF08A" text-anchor="middle">TEA</text>
+  <text x="70" y="66" font-family="system-ui, sans-serif" font-size="6" font-weight="bold" fill="#FACC15" text-anchor="middle" letter-spacing="1">PREMIUM</text>
+  <!-- Desh Ki Chai Leaf Banner -->
+  <ellipse cx="70" cy="84" rx="18" ry="12" fill="#F59E0B" opacity="0.9" />
+  <!-- Steaming Tea Cup Icon -->
+  <path d="M60 82 L80 82 L77 94 C76 96 64 96 63 94 Z" fill="#78350F" />
+  <path d="M66 76 Q65 72 67 69" stroke="#FEF08A" stroke-width="1.5" fill="none" stroke-linecap="round" />
+  <path d="M73 75 Q72 71 74 68" stroke="#FEF08A" stroke-width="1.5" fill="none" stroke-linecap="round" />
+  <!-- 500g badge -->
+  <rect x="55" y="104" width="30" height="8" rx="2" fill="#FEF08A" />
+  <text x="70" y="110.5" font-family="monospace" font-size="6" font-weight="bold" fill="#14532D" text-anchor="middle">500g</text>
+</svg>

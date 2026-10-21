@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgAtta" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFEDD5" />
+      <stop offset="100%" stop-color="#FED7AA" />
+    </linearGradient>
+    <linearGradient id="attaBag" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#C2410C" />
+      <stop offset="50%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#C2410C" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgAtta)" />
+  <!-- Atta 5kg Bag -->
+  <path d="M32 24 L108 24 L104 116 C104 120 36 120 36 116 Z" fill="url(#attaBag)" stroke="#9A3412" stroke-width="2" />
+  <!-- Bag Top handle stitched edge -->
+  <rect x="42" y="16" width="56" height="10" rx="5" fill="#FED7AA" stroke="#9A3412" stroke-width="1.5" />
+  <!-- Brand Arch Window -->
+  <path d="M40 40 Q70 32 100 40 L100 84 Q70 76 40 84 Z" fill="#FFFBEB" />
+  <text x="70" y="52" font-family="serif, system-ui" font-size="7.5" font-weight="bold" fill="#9A3412" text-anchor="middle">AASHIRVAAD</text>
+  <text x="70" y="64" font-family="system-ui, sans-serif" font-size="9" font-weight="900" fill="#C2410C" text-anchor="middle">SHUDH CHAKKI</text>
+  <text x="70" y="74" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#B45309" text-anchor="middle">ATTA</text>
+  <!-- Wheat Stalks Bottom Graphic -->
+  <path d="M70 106 L70 88" stroke="#FEF08A" stroke-width="2" stroke-linecap="round" />
+  <ellipse cx="66" cy="94" rx="3" ry="1.5" transform="rotate(-30 66 94)" fill="#FEF08A" />
+  <ellipse cx="74" cy="94" rx="3" ry="1.5" transform="rotate(30 74 94)" fill="#FEF08A" />
+  <ellipse cx="65" cy="100" rx="3" ry="1.5" transform="rotate(-30 65 100)" fill="#FEF08A" />
+  <ellipse cx="75" cy="100" rx="3" ry="1.5" transform="rotate(30 75 100)" fill="#FEF08A" />
+  <!-- 5kg Stamp -->
+  <rect x="76" y="104" width="22" height="9" rx="2" fill="#FEF08A" />
+  <text x="87" y="111" font-family="monospace" font-size="6.5" font-weight="bold" fill="#9A3412" text-anchor="middle">5 kg</text>
+</svg>

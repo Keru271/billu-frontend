@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgOil" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEFCE8" />
+      <stop offset="100%" stop-color="#FEF08A" />
+    </linearGradient>
+    <linearGradient id="oilLiquid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="50%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgOil)" />
+  <!-- Oil Bottle Container -->
+  <path d="M54 20 L86 20 L86 28 C86 34 94 40 94 48 L94 116 C94 120 46 120 46 116 L46 48 C46 40 54 34 54 28 Z" fill="url(#oilLiquid)" stroke="#B45309" stroke-width="2" />
+  <!-- Bottle Cap -->
+  <rect x="58" y="14" width="24" height="8" rx="2" fill="#16A34A" />
+  <!-- Bottle Label -->
+  <rect x="49" y="52" width="42" height="42" rx="4" fill="#FFFFFF" stroke="#F59E0B" stroke-width="1.5" />
+  <!-- Fortune Brand -->
+  <rect x="53" y="56" width="34" height="11" rx="2" fill="#16A34A" />
+  <text x="70" y="64.5" font-family="system-ui, sans-serif" font-size="7" font-weight="900" fill="#FFFFFF" text-anchor="middle">fortune</text>
+  <!-- Sunflower Blossom Icon -->
+  <circle cx="70" cy="76" r="4" fill="#78350F" />
+  <circle cx="70" cy="70" r="2" fill="#F59E0B" />
+  <circle cx="70" cy="82" r="2" fill="#F59E0B" />
+  <circle cx="64" cy="76" r="2" fill="#F59E0B" />
+  <circle cx="76" cy="76" r="2" fill="#F59E0B" />
+  <text x="70" y="89" font-family="system-ui, sans-serif" font-size="5" font-weight="bold" fill="#B45309" text-anchor="middle">SUNLITE 1L</text>
+</svg>

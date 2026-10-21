@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bgSnack" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7" />
+      <stop offset="100%" stop-color="#FDE68A" />
+    </linearGradient>
+    <linearGradient id="biscuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="24" fill="url(#bgSnack)" />
+  <!-- Chips bag & Cookie -->
+  <!-- Crisp Packet / Bag -->
+  <path d="M26 30 L48 24 L56 76 L32 82 Z" fill="#EF4444" stroke="#DC2626" stroke-width="2" />
+  <path d="M28 32 L46 27 L50 48 L32 52 Z" fill="#F87171" opacity="0.7" />
+  <!-- Cookie / Biscuit -->
+  <circle cx="66" cy="60" r="18" fill="url(#biscuitGrad)" stroke="#B45309" stroke-width="2" />
+  <circle cx="58" cy="54" r="2" fill="#78350F" />
+  <circle cx="66" cy="50" r="2.5" fill="#78350F" />
+  <circle cx="73" cy="56" r="2" fill="#78350F" />
+  <circle cx="62" cy="66" r="2.5" fill="#78350F" />
+  <circle cx="71" cy="68" r="2" fill="#78350F" />
+  <!-- Chocolate bar block -->
+  <rect x="52" y="24" width="22" height="18" rx="2" fill="#581C87" stroke="#3B0764" stroke-width="1.5" />
+  <rect x="55" y="27" width="7" height="6" fill="#7E22CE" />
+  <rect x="64" y="27" width="7" height="6" fill="#7E22CE" />
+  <rect x="55" y="34" width="7" height="6" fill="#7E22CE" />
+  <rect x="64" y="34" width="7" height="6" fill="#7E22CE" />
+</svg>

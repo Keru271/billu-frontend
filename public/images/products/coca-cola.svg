@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgCoke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEE2E2" />
+      <stop offset="100%" stop-color="#FECACA" />
+    </linearGradient>
+    <linearGradient id="cokeLiquid" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7F1D1D" />
+      <stop offset="50%" stop-color="#991B1B" />
+      <stop offset="100%" stop-color="#450A0A" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgCoke)" />
+  <!-- Contour Coke Bottle -->
+  <path d="M62 16 L78 16 L78 26 C78 30 84 36 84 46 C84 56 80 62 82 74 C84 86 86 98 86 114 C86 120 54 120 54 114 C54 98 56 86 58 74 C60 62 56 56 56 46 C56 36 62 30 62 26 Z" fill="url(#cokeLiquid)" stroke="#991B1B" stroke-width="1.5" />
+  <!-- Red Bottle Cap -->
+  <rect x="63" y="10" width="14" height="7" rx="2" fill="#DC2626" />
+  <!-- Red Label Wrap -->
+  <path d="M57 60 L83 60 L83 86 L57 86 Z" fill="#DC2626" />
+  <!-- White Dynamic Ribbon Curve -->
+  <path d="M57 76 Q70 66 83 72" fill="none" stroke="#FFFFFF" stroke-width="2" />
+  <text x="70" y="70" font-family="serif, cursive" font-size="7.5" font-weight="bold" fill="#FFFFFF" text-anchor="middle" font-style="italic">Coca-Cola</text>
+  <text x="70" y="82" font-family="system-ui, sans-serif" font-size="4.5" font-weight="bold" fill="#FEE2E2" text-anchor="middle">750ml</text>
+</svg>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billo POS - Offline Mode</title>
+  <meta name="theme-color" content="#C2410C" />
+  <link rel="icon" href="/icons/icon-192x192.png" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    body {
+      background-color: #FAFAF9;
+      color: #1C1917;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .card {
+      background: #FFFFFF;
+      border: 1px solid #E7E5E4;
+      border-radius: 20px;
+      padding: 36px 28px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+    }
+    .icon-badge {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 20px;
+      background: #FFF7ED;
+      border: 1px solid #FFEDD5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #EA580C;
+    }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1C1917;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    p {
+      font-size: 14px;
+      color: #78716C;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #FEF3C7;
+      color: #92400E;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      margin-bottom: 24px;
+      border: 1px solid #FDE68A;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #D97706;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      border: none;
+    }
+    .btn-primary {
+      background: #C2410C;
+      color: #FFFFFF;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(194, 65, 12, 0.25);
+    }
+    .btn-primary:hover {
+      background: #9A3412;
+    }
+    .btn-secondary {
+      background: #F5F5F4;
+      color: #44403C;
+    }
+    .btn-secondary:hover {
+      background: #E7E5E4;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-badge">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+    <h1>You are currently offline</h1>
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span>No Internet Connection</span>
+    </div>
+    <p>
+      The POS Billing counter is available offline. If you were viewing another page, click below to return to the active billing desk.
+    </p>
+    <a href="/" class="btn btn-primary">Open Billing Counter</a>
+    <button onclick="window.location.reload()" class="btn btn-secondary">Retry Connection</button>
+  </div>
+
+  <script>
+    window.addEventListener('online', function() {
+      window.location.href = '/';
+    });
+  </script>
+</body>
+</html>

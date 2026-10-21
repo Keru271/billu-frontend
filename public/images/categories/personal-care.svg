@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bgCare" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F3E8FF" />
+      <stop offset="100%" stop-color="#E9D5FF" />
+    </linearGradient>
+    <linearGradient id="dispenserGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0D9488" />
+      <stop offset="100%" stop-color="#14B8A6" />
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="24" fill="url(#bgCare)" />
+  <!-- Soap Dispenser Bottle -->
+  <rect x="36" y="42" width="28" height="42" rx="8" fill="url(#dispenserGrad)" />
+  <rect x="46" y="32" width="8" height="10" fill="#E2E8F0" />
+  <!-- Pump head -->
+  <path d="M46 32 L46 25 L62 25 L62 28 L50 28 L50 32 Z" fill="#64748B" />
+  <rect x="42" y="52" width="16" height="20" rx="3" fill="#CCFBF1" />
+  <!-- Sparkles / Bubbles -->
+  <circle cx="72" cy="34" r="6" fill="#38BDF8" opacity="0.6" />
+  <circle cx="78" cy="24" r="3.5" fill="#38BDF8" opacity="0.5" />
+  <circle cx="26" cy="50" r="5" fill="#38BDF8" opacity="0.6" />
+  <circle cx="28" cy="64" r="3" fill="#38BDF8" opacity="0.5" />
+</svg>

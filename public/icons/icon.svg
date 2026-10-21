@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C" />
+      <stop offset="100%" stop-color="#9A3412" />
+    </linearGradient>
+    <filter id="cardShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background Squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Receipt Card Base -->
+  <g filter="url(#cardShadow)">
+    <path d="M 128 96 L 384 96 L 384 390 L 362.6 374 L 341.3 390 L 320 374 L 298.6 390 L 277.3 374 L 256 390 L 234.6 374 L 213.3 390 L 192 374 L 170.6 390 L 149.3 374 L 128 390 Z" fill="#FAFAF9" />
+  </g>
+
+  <!-- Header Accent Strip -->
+  <path d="M 128 96 L 384 96 L 384 136 L 128 136 Z" fill="#C2410C" />
+
+  <!-- Receipt Lines -->
+  <rect x="160" y="170" width="192" height="16" rx="4" fill="#78716C" />
+  <rect x="160" y="210" width="140" height="14" rx="4" fill="#D6D3D1" />
+  <rect x="160" y="244" width="168" height="14" rx="4" fill="#D6D3D1" />
+  
+  <!-- Total Bar -->
+  <rect x="160" y="290" width="192" height="24" rx="6" fill="#C2410C" />
+
+  <!-- Sparkle Badge -->
+  <g transform="translate(360, 120)">
+    <polygon points="0,-36 10,-10 36,0 10,10 0,36 -10,10 -36,0 -10,-10" fill="#F59E0B" />
+    <circle cx="0" cy="0" r="6" fill="#FFFBEB" />
+  </g>
+</svg>

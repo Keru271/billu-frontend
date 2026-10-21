@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgParle" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7" />
+      <stop offset="100%" stop-color="#FDE68A" />
+    </linearGradient>
+    <linearGradient id="packGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="50%" stop-color="#FBBF24" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgParle)" />
+  <!-- Biscuit Roll / Pack -->
+  <rect x="28" y="38" width="84" height="64" rx="8" fill="url(#packGold)" stroke="#B45309" stroke-width="2" />
+  <!-- Red Brand Oval -->
+  <ellipse cx="56" cy="62" rx="18" ry="12" fill="#DC2626" />
+  <text x="56" y="65" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#FFFFFF" text-anchor="middle">Parle-G</text>
+  <!-- Gold Badge -->
+  <text x="56" y="74" font-family="system-ui, sans-serif" font-size="6" font-weight="bold" fill="#FEF08A" text-anchor="middle">GOLD</text>
+  <!-- Biscuit Graphic on right -->
+  <rect x="78" y="50" width="26" height="34" rx="3" fill="#D97706" stroke="#92400E" stroke-width="1.5" />
+  <!-- Biscuit Punctures -->
+  <circle cx="84" cy="57" r="1" fill="#78350F" />
+  <circle cx="91" cy="57" r="1" fill="#78350F" />
+  <circle cx="98" cy="57" r="1" fill="#78350F" />
+  <circle cx="84" cy="67" r="1" fill="#78350F" />
+  <text x="91" y="70" font-family="system-ui, sans-serif" font-size="6" font-weight="900" fill="#78350F" text-anchor="middle">G</text>
+  <circle cx="98" cy="67" r="1" fill="#78350F" />
+  <circle cx="84" cy="77" r="1" fill="#78350F" />
+  <circle cx="91" cy="77" r="1" fill="#78350F" />
+  <circle cx="98" cy="77" r="1" fill="#78350F" />
+  <!-- 250g weight tag -->
+  <text x="44" y="94" font-family="monospace" font-size="7" font-weight="bold" fill="#78350F">250g</text>
+</svg>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgMaggi" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="100%" stop-color="#FDE047" />
+    </linearGradient>
+    <linearGradient id="maggiYellow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FACC15" />
+      <stop offset="50%" stop-color="#EAB308" />
+      <stop offset="100%" stop-color="#FACC15" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgMaggi)" />
+  <!-- Maggi Pillow Pack -->
+  <path d="M26 34 C26 30 114 30 114 34 L110 106 C110 110 30 110 30 106 Z" fill="url(#maggiYellow)" stroke="#CA8A04" stroke-width="2" />
+  <!-- Red Maggi Oval Badge -->
+  <ellipse cx="70" cy="52" rx="28" ry="16" fill="#DC2626" stroke="#FEF08A" stroke-width="1.5" />
+  <text x="70" y="57" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#FACC15" text-anchor="middle" font-style="italic">Maggi</text>
+  <!-- 2-Minute Clock -->
+  <circle cx="44" cy="76" r="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="1.5" />
+  <text x="44" y="80" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#DC2626" text-anchor="middle">2m</text>
+  <!-- Noodle bowl swirl graphic -->
+  <path d="M60 84 Q70 74 80 84 Q90 94 100 84" fill="none" stroke="#D97706" stroke-width="3" stroke-linecap="round" />
+  <path d="M64 89 Q74 81 84 89 Q94 97 98 90" fill="none" stroke="#B45309" stroke-width="2.5" stroke-linecap="round" />
+  <!-- Masala Tag -->
+  <rect x="58" y="70" width="38" height="10" rx="3" fill="#DC2626" />
+  <text x="77" y="77.5" font-family="system-ui, sans-serif" font-size="6" font-weight="bold" fill="#FFFFFF" text-anchor="middle">MASALA</text>
+</svg>

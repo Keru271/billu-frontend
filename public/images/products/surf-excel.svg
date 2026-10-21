@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgSurf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFF6FF" />
+      <stop offset="100%" stop-color="#DBEAFE" />
+    </linearGradient>
+    <linearGradient id="surfBag" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1D4ED8" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1E40AF" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgSurf)" />
+  <!-- Detergent Pouch Bag -->
+  <path d="M34 26 C34 22 106 22 106 26 L102 116 C102 120 38 120 38 116 Z" fill="url(#surfBag)" stroke="#1E3A8A" stroke-width="2" />
+  <!-- Colorful Splash Blast Behind Logo -->
+  <path d="M70 42 L78 52 L92 48 L86 60 L98 68 L84 72 L86 86 L74 78 L68 90 L62 76 L48 82 L54 68 L42 62 L56 54 L52 42 L66 48 Z" fill="#F43F5E" opacity="0.9" />
+  <ellipse cx="70" cy="64" rx="24" ry="14" fill="#FFFFFF" />
+  <!-- Surf Excel Brand Text -->
+  <text x="70" y="62" font-family="system-ui, sans-serif" font-size="9" font-weight="900" fill="#1D4ED8" text-anchor="middle" font-style="italic">Surf</text>
+  <text x="70" y="72" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#10B981" text-anchor="middle">excel</text>
+  <!-- Easy Wash Yellow Banner -->
+  <rect x="44" y="86" width="52" height="10" rx="3" fill="#FACC15" />
+  <text x="70" y="93.5" font-family="system-ui, sans-serif" font-size="6" font-weight="900" fill="#1E3A8A" text-anchor="middle">EASY WASH 1kg</text>
+</svg>

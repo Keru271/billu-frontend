@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgButter" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFBEB" />
+      <stop offset="100%" stop-color="#FEF3C7" />
+    </linearGradient>
+    <linearGradient id="cartonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FACC15" />
+      <stop offset="100%" stop-color="#EAB308" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgButter)" />
+  <!-- Butter Carton Box (Isometric perspective) -->
+  <path d="M26 48 L76 32 L116 46 L66 62 Z" fill="#FEF08A" stroke="#CA8A04" stroke-width="1.5" />
+  <path d="M26 48 L66 62 L66 102 L26 88 Z" fill="url(#cartonGrad)" stroke="#CA8A04" stroke-width="1.5" />
+  <path d="M66 62 L116 46 L116 86 L66 102 Z" fill="#CA8A04" stroke="#A16207" stroke-width="1.5" />
+  <!-- Red Amul Badge on front -->
+  <rect x="31" y="58" width="30" height="16" rx="2" fill="#DC2626" />
+  <text x="46" y="70" font-family="system-ui, sans-serif" font-size="10" font-weight="900" fill="#FFFFFF" text-anchor="middle" font-style="italic">Amul</text>
+  <text x="46" y="82" font-family="system-ui, sans-serif" font-size="6" font-weight="bold" fill="#1E3A8A" text-anchor="middle">BUTTER</text>
+  <!-- Polka dots (iconic Amul girl pattern) -->
+  <circle cx="34" cy="78" r="1.5" fill="#DC2626" />
+  <circle cx="42" cy="78" r="1.5" fill="#1E3A8A" />
+  <circle cx="50" cy="78" r="1.5" fill="#DC2626" />
+  <circle cx="58" cy="78" r="1.5" fill="#1E3A8A" />
+  <!-- Side panel details -->
+  <text x="91" y="66" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#FFFFFF" text-anchor="middle">500g</text>
+  <text x="91" y="76" font-family="system-ui, sans-serif" font-size="5" fill="#FEF08A" text-anchor="middle">PASTEURISED</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgRice" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7" />
+      <stop offset="100%" stop-color="#FDE68A" />
+    </linearGradient>
+    <linearGradient id="ricePack" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#881337" />
+      <stop offset="50%" stop-color="#9F1239" />
+      <stop offset="100%" stop-color="#881337" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgRice)" />
+  <!-- Rice Pouch -->
+  <path d="M35 24 C35 20 105 20 105 24 L101 116 C101 120 39 120 39 116 Z" fill="url(#ricePack)" stroke="#4C0519" stroke-width="2" />
+  <!-- Gold Header Dome -->
+  <path d="M42 30 Q70 24 98 30 L98 46 Q70 42 42 46 Z" fill="#F59E0B" />
+  <circle cx="70" cy="36" r="4" fill="#881337" />
+  <!-- India Gate branding window -->
+  <rect x="44" y="52" width="52" height="34" rx="4" fill="#FFFBEB" stroke="#F59E0B" stroke-width="1.5" />
+  <text x="70" y="62" font-family="serif, system-ui" font-size="6" font-weight="bold" fill="#881337" text-anchor="middle">INDIA GATE</text>
+  <text x="70" y="73" font-family="system-ui, sans-serif" font-size="8" font-weight="900" fill="#B45309" text-anchor="middle">BASMATI</text>
+  <text x="70" y="81" font-family="system-ui, sans-serif" font-size="6" font-weight="bold" fill="#881337" text-anchor="middle">RICE</text>
+  <!-- Rice Grain grains illustration -->
+  <ellipse cx="56" cy="98" rx="2" ry="5" transform="rotate(30 56 98)" fill="#FFFFFF" />
+  <ellipse cx="64" cy="99" rx="2" ry="6" transform="rotate(-15 64 99)" fill="#FFFFFF" />
+  <ellipse cx="73" cy="97" rx="2" ry="5.5" transform="rotate(20 73 97)" fill="#FFFFFF" />
+  <ellipse cx="82" cy="100" rx="2" ry="5" transform="rotate(-25 82 100)" fill="#FFFFFF" />
+  <!-- Net wt 1kg -->
+  <rect x="55" y="106" width="30" height="8" rx="2" fill="#F59E0B" />
+  <text x="70" y="112.5" font-family="monospace" font-size="6" font-weight="bold" fill="#881337" text-anchor="middle">1 kg</text>
+</svg>

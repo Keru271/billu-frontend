@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140" width="140" height="140">
+  <defs>
+    <linearGradient id="bgTataSalt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EFF6FF" />
+      <stop offset="100%" stop-color="#DBEAFE" />
+    </linearGradient>
+    <linearGradient id="saltPack" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+  </defs>
+  <rect width="140" height="140" rx="16" fill="url(#bgTataSalt)" />
+  <!-- Salt Pouch Packet -->
+  <path d="M34 26 C34 22 106 22 106 26 L102 114 C102 118 38 118 38 114 Z" fill="url(#saltPack)" stroke="#1E40AF" stroke-width="2" />
+  <!-- White & Red Brand Banner -->
+  <path d="M36 44 Q70 52 104 44 L103 76 Q70 84 37 76 Z" fill="#FFFFFF" />
+  <rect x="44" y="50" width="52" height="18" rx="3" fill="#DC2626" />
+  <text x="70" y="63" font-family="system-ui, sans-serif" font-size="11" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">TATA</text>
+  <text x="70" y="74" font-family="system-ui, sans-serif" font-size="7" font-weight="bold" fill="#1E3A8A" text-anchor="middle">SALT</text>
+  <!-- Salt crystals illustration -->
+  <circle cx="54" cy="94" r="3" fill="#FFFFFF" opacity="0.9" />
+  <circle cx="70" cy="98" r="4" fill="#FFFFFF" opacity="0.95" />
+  <circle cx="86" cy="93" r="3.5" fill="#FFFFFF" opacity="0.9" />
+  <!-- 1kg stamp -->
+  <rect x="74" y="102" width="22" height="9" rx="2" fill="#F59E0B" />
+  <text x="85" y="109" font-family="monospace" font-size="6.5" font-weight="bold" fill="#1E3A8A" text-anchor="middle">1 kg</text>
+</svg>

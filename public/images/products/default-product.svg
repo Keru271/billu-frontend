@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="bgDefProd" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FAFAF9" />
+      <stop offset="100%" stop-color="#E7E5E4" />
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="16" fill="url(#bgDefProd)" />
+  <!-- Generic Package Box -->
+  <path d="M60 28 L94 45 L94 82 L60 100 L26 82 L26 45 Z" fill="#D6D3D1" stroke="#A8A29E" stroke-width="1.5" />
+  <path d="M60 28 L94 45 L60 62 L26 45 Z" fill="#E7E5E4" />
+  <path d="M60 62 L60 100" stroke="#A8A29E" stroke-width="1.5" />
+  <circle cx="60" cy="45" r="5" fill="#C2410C" opacity="0.8" />
+</svg>
