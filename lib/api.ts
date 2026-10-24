@@ -205,7 +205,11 @@ export async function apiRequest<T = any>(
     ...(options.headers as Record<string, string>),
   };
 
-  if (options.body && !headers['Content-Type']) {
+  if (
+    options.body &&
+    !headers['Content-Type'] &&
+    !(typeof FormData !== 'undefined' && options.body instanceof FormData)
+  ) {
     headers['Content-Type'] = 'application/json';
   }
 
@@ -271,3 +275,48 @@ export async function apiRequest<T = any>(
     };
   }
 }
+
+export interface UploadResult {
+  url: string;
+  publicId: string;
+  format?: string;
+  width?: number;
+  height?: number;
+  bytes?: number;
+}
+
+export async function uploadImage(
+  file: File | Blob | string,
+  folder: 'products' | 'categories' | 'general' = 'products'
+): Promise<{ success: boolean; data?: UploadResult; error?: { message: string } }> {
+  if (typeof file === 'string') {
+    return apiRequest<UploadResult>('/api/upload', {
+      method: 'POST',
+      body: JSON.stringify({ file, folder }),
+    });
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('folder', folder);
+
+  return apiRequest<UploadResult>('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function getUploadConfig(): Promise<{
+  success: boolean;
+  data?: { isConfigured: boolean; cloudName?: string };
+}> {
+  return apiRequest<{ isConfigured: boolean; cloudName?: string }>('/api/upload/config');
+}
+
+export async function deleteUploadedImage(publicId: string): Promise<{ success: boolean; error?: { message: string } }> {
+  return apiRequest('/api/upload', {
+    method: 'DELETE',
+    body: JSON.stringify({ publicId }),
+  });
+}
+

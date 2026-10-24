@@ -742,7 +742,7 @@ export default function POSBilling({
         {/* Main Catalog Body: Split on mobile (Left categories, Right products) / Full width on desktop */}
         <div className="flex-1 flex overflow-hidden">
           {/* Mobile Left Sidebar: Categories */}
-          <div className="md:hidden w-16 sm:w-20 shrink-0 bg-[#F5F5F4] border-r border-[#D6D3D1] overflow-y-auto flex flex-col py-1.5 select-none scrollbar-none space-y-1">
+          <div className="md:hidden w-16 sm:w-20 shrink-0 bg-[#F5F5F4] border-r border-[#D6D3D1] overflow-y-auto flex flex-col py-1.5 select-none scrollbar-none space-y-1 pb-24">
             <button
               onClick={() => setSelectedCategory('all')}
               className={`p-1.5 sm:p-2 flex flex-col items-center justify-center text-center transition-all cursor-pointer border-l-2 ${
@@ -799,7 +799,7 @@ export default function POSBilling({
           </div>
 
           {/* Right Area: Products Grid (fills right side on mobile, full width on desktop) */}
-          <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 bg-[#FAFAF9]">
+          <div className="flex-1 overflow-y-auto p-2 sm:p-4 md:p-6 bg-[#FAFAF9] pb-24 md:pb-6">
             {/* Mobile Category Active Heading */}
             <div className="md:hidden flex items-center justify-between pb-1.5 mb-2 border-b border-[#D6D3D1]">
               <span className="text-xs font-bold text-[#1C1917] truncate">
@@ -944,22 +944,22 @@ export default function POSBilling({
           </div>
         </div>
 
-        {/* Mobile Sticky Floating Cart Bar */}
-        {activeCartItems.length > 0 && (
-          <div className="lg:hidden p-3 bg-gradient-to-t from-[#FAFAF9] via-[#FAFAF9]/95 to-transparent sticky bottom-0 z-20 border-t border-[#D6D3D1]">
+        {/* Mobile Floating Cart Bar (Floats directly above the bottom navigation bar) */}
+        {activeCartItems.length > 0 && mobileTab === 'catalog' && (
+          <div className="lg:hidden fixed bottom-14 left-0 right-0 z-30 p-2.5 sm:p-3 pointer-events-none flex justify-center">
             <button
               onClick={() => setMobileTab('cart')}
-              className="w-full h-12 px-4 bg-[#C2410C] hover:bg-[#9A3412] text-white rounded-lg font-semibold text-sm flex items-center justify-between shadow-[0_4px_12px_rgba(194,65,12,0.25)] transition-all cursor-pointer"
+              className="pointer-events-auto w-full max-w-lg h-12 px-4 bg-[#C2410C] hover:bg-[#9A3412] active:scale-[0.98] text-white rounded-xl font-semibold text-sm flex items-center justify-between shadow-[0_8px_24px_rgba(194,65,12,0.35)] border border-[#EA580C]/40 backdrop-blur-xs transition-all cursor-pointer animate-fadeIn"
             >
               <div className="flex items-center space-x-2">
-                <span className="bg-[#9A3412] px-2 py-0.5 rounded font-mono text-xs">
-                  {activeCartItems.reduce((acc, i) => acc + i.qty, 0)} items
+                <span className="bg-[#9A3412] px-2.5 py-0.5 rounded-lg font-mono text-xs font-bold shadow-2xs">
+                  {activeCartItems.reduce((acc, i) => acc + i.qty, 0)} {activeCartItems.reduce((acc, i) => acc + i.qty, 0) === 1 ? 'item' : 'items'}
                 </span>
-                <span className="font-mono text-base font-semibold">
+                <span className="font-mono text-base font-bold tracking-tight">
                   ₹{grandTotalRupees.toFixed(2)}
                 </span>
               </div>
-              <div className="flex items-center space-x-1 font-semibold">
+              <div className="flex items-center space-x-1.5 font-bold text-xs uppercase tracking-wider">
                 <span>View Cart & Pay</span>
                 <ArrowRight className="w-4 h-4" />
               </div>
