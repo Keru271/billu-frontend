@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Settings, Store, QrCode, Shield, Users, Save, Check, UserPlus, Trash2, AlertCircle, Lock, Percent, Tag, Printer } from 'lucide-react';
 import { apiRequest, AuthUser } from '../lib/api';
 import { ThermalPaperSize, getSavedThermalPaperSize, saveThermalPaperSize, printThermalReceipt } from '../lib/receipt';
@@ -73,6 +73,8 @@ export default function SettingsView({ shopSettings, refreshSettings, currentUse
 
   const isOwner = currentUser?.role === 'OWNER';
 
+  const teamFetchedRef = useRef(false);
+
   useEffect(() => {
     if (shopSettings) {
       setName(shopSettings.name || '');
@@ -89,10 +91,14 @@ export default function SettingsView({ shopSettings, refreshSettings, currentUse
       setInvoicePrefix(shopSettings.invoicePrefix || 'INV');
       setRoundOff(shopSettings.roundOff ?? true);
     }
-    if (isOwner) {
+  }, [shopSettings]);
+
+  useEffect(() => {
+    if (isOwner && !teamFetchedRef.current) {
+      teamFetchedRef.current = true;
       fetchTeam();
     }
-  }, [shopSettings, isOwner]);
+  }, [isOwner]);
 
   const fetchTeam = async () => {
     const res = await apiRequest('/api/team');

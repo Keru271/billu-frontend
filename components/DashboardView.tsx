@@ -164,14 +164,23 @@ export default function DashboardView({ currentUser }: DashboardViewProps = {}) 
     }
   };
 
-  useEffect(() => {
-    fetchOverview();
-    fetchProductSales();
-  }, [currentUser]);
+  const overviewFetchedRef = useRef(false);
+  const lastFetchedSalesKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
+    if (overviewFetchedRef.current) return;
+    if (currentUser && !canReports) return;
+    overviewFetchedRef.current = true;
+    fetchOverview();
+  }, [currentUser, canReports]);
+
+  useEffect(() => {
+    if (currentUser && !canReports) return;
+    const key = `${selectedPeriod}_${customStartDate}_${customEndDate}`;
+    if (lastFetchedSalesKeyRef.current === key) return;
+    lastFetchedSalesKeyRef.current = key;
     fetchProductSales();
-  }, [selectedPeriod]);
+  }, [selectedPeriod, customStartDate, customEndDate, currentUser, canReports]);
 
   // Handle clicking a product from top products or chips
   const handleInspectProduct = (productNameOrId: string) => {

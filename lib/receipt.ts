@@ -268,7 +268,7 @@ export function generateThermalHtml(data: BillReceiptData, is58mm: boolean): str
 
   <div class="footer">
     Instagram: @thecaramelpan<br />
-    Thank you! Please visit us again.
+    Thank you! visit us again.
   </div>
 </body>
 </html>`;
@@ -427,7 +427,7 @@ export function buildEscPosBytes(data: BillReceiptData, is58mm: boolean): Uint8A
   // Footer centered
   write(0x1b, 0x61, 0x01);
   writeText('Instagram: @thecaramelpan\n');
-  writeText('Thank you! Please visit us again.\n\n\n\n');
+  writeText('Thank you! visit us again.\n\n\n\n');
 
   // Feed & Cut
   write(0x1d, 0x56, 0x41, 0x10);
@@ -437,6 +437,58 @@ export function buildEscPosBytes(data: BillReceiptData, is58mm: boolean): Uint8A
 
 let cachedDevice: any = null;
 let cachedCharacteristic: any = null;
+
+export function isBluetoothConnected(): boolean {
+  return Boolean(cachedDevice && cachedDevice.gatt?.connected && cachedCharacteristic);
+}
+
+/**
+ * Direct & Immediate Receipt Printing.
+ * Triggers printing instantly without waiting for backend API or network promises.
+ * If Bluetooth printer is actively connected, prints silently via Bluetooth.
+ * Otherwise triggers instant thermal printing via hidden iframe.
+ */
+export async function printReceiptImmediate(
+  data: BillReceiptData,
+  paperSize?: ThermalPaperSize
+): Promise<void> {
+  const size = paperSize || getSavedThermalPaperSize();
+  if (isBluetoothConnected()) {
+    try {
+      const res = await printViaBluetooth(data, size);
+      if (res.success) return;
+    } catch (e) {
+      console.warn('Bluetooth print failed, falling back to thermal iframe print:', e);
+    }
+  }
+  printThermalReceipt(data, size);
+}
+
+export function getLastKnownBillNo(): number {
+  if (typeof window === 'undefined') return 1000;
+  try {
+    const val = localStorage.getItem('billo_last_known_bill_no');
+    if (val) return parseInt(val, 10);
+  } catch { }
+  return 1000;
+}
+
+export function setLastKnownBillNo(num: number): void {
+  if (typeof window === 'undefined' || !num) return;
+  try {
+    const current = getLastKnownBillNo();
+    if (num >= current) {
+      localStorage.setItem('billo_last_known_bill_no', num.toString());
+    }
+  } catch { }
+}
+
+export function getNextEstimatedBillNo(): number {
+  const current = getLastKnownBillNo();
+  const next = current + 1;
+  setLastKnownBillNo(next);
+  return next;
+}
 
 export function resetBluetoothPrinter(): void {
   try {
@@ -708,7 +760,7 @@ export function downloadThermalPdf(data: BillReceiptData, paperSize?: ThermalPap
   doc.setFontSize(is58mm ? 7.5 : 8.5);
   doc.text('Instagram: @thecaramelpan', centerX, y, { align: 'center' });
   y += is58mm ? 3.5 : 4.5;
-  doc.text('Thank you! Please visit us again.', centerX, y, { align: 'center' });
+  doc.text('Thank you! visit us again.', centerX, y, { align: 'center' });
 
   doc.save(`Bill-${data.billNo}.pdf`);
 }
@@ -733,7 +785,7 @@ export function buildWhatsAppLink(phone: string, data: BillReceiptData): string 
     `*Total Amount: ₹${(data.totalPaise / 100).toFixed(2)}*`,
     data.payments.map((p) => `Payment: ${p.method} (₹${(p.amountPaise / 100).toFixed(2)})`).join(', '),
     `\nInstagram: @thecaramelpan`,
-    `Thank you! Please visit us again.`,
+    `Thank you! visit us again.`,
   ].join('\n');
 
   return `https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`;

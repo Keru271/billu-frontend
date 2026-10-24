@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import POSBilling, { Product, Customer, CartItem, CategoryItem } from '../components/POSBilling';
 import InventoryView from '../components/InventoryView';
@@ -14,6 +14,12 @@ import LoginModal from '../components/LoginModal';
 import { apiRequest, fetchCurrentUser, logout, AuthUser } from '../lib/api';
 import OfflineSyncBanner from '../components/OfflineSyncBanner';
 import { initOfflineSync } from '../lib/offlineSync';
+import { setLastKnownBillNo } from '../lib/receipt';
+import {
+  getStoredProducts,
+  saveStoredProducts,
+  initIdleStockSync,
+} from '../lib/productStore';
 
 export default function BillDeskApp() {
   const [activeTab, setActiveTab] = useState<
@@ -25,7 +31,7 @@ export default function BillDeskApp() {
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
-  // Master Data
+  // Master Data (Instant recovery from local store on startup)
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -39,46 +45,119 @@ export default function BillDeskApp() {
   const [isHeldDrawerOpen, setIsHeldDrawerOpen] = useState(false);
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
 
-  // Fetch Master Data
-  const fetchAllData = async () => {
+  // Immediately load cached products on client mount
+  useEffect(() => {
+    const cached = getStoredProducts();
+    if (cached.length > 0) {
+      setProducts(cached);
+    }
+  }, []);
+
+  // 1. Catalog API (Products & Categories) - Needed ONLY for POS & Inventory
+  const fetchCatalog = useCallback(async () => {
     try {
-      const [prodRes, catRes, custRes, setRes, heldRes] = await Promise.all([
+      const [prodRes, catRes] = await Promise.all([
         apiRequest('/api/products'),
         apiRequest('/api/categories'),
-        apiRequest('/api/customers'),
-        apiRequest('/api/settings'),
-        apiRequest('/api/held'),
       ]);
 
       if (prodRes.success && Array.isArray(prodRes.data)) {
+        saveStoredProducts(prodRes.data);
         setProducts(prodRes.data);
       }
       if (catRes.success && Array.isArray(catRes.data)) {
         setCategories(catRes.data);
       }
+    } catch (e) {
+      console.error('Error fetching catalog:', e);
+    }
+  }, []);
+
+  // 2. Customers API - Needed ONLY for Customers tab or POS Customer Selection
+  const fetchCustomers = useCallback(async () => {
+    try {
+      const custRes = await apiRequest('/api/customers');
       if (custRes.success && Array.isArray(custRes.data)) {
         setCustomers(custRes.data);
       }
+    } catch (e) {
+      console.error('Error fetching customers:', e);
+    }
+  }, []);
+
+  // 3. Settings API - Needed ONLY for Settings tab
+  const isFetchingSettingsRef = useRef(false);
+  const fetchSettings = useCallback(async () => {
+    if (isFetchingSettingsRef.current) return;
+    isFetchingSettingsRef.current = true;
+    try {
+      const setRes = await apiRequest('/api/settings');
       if (setRes.success && setRes.data) {
         setShopSettings(setRes.data);
       }
+    } catch (e) {
+      console.error('Error fetching settings:', e);
+    } finally {
+      isFetchingSettingsRef.current = false;
+    }
+  }, []);
+
+  // 4. Held Carts API - Needed ONLY when Held Drawer is opened
+  const fetchHeldCarts = useCallback(async () => {
+    try {
+      const heldRes = await apiRequest('/api/held');
       if (heldRes.success && Array.isArray(heldRes.data)) {
         setHeldCarts(heldRes.data);
       }
     } catch (e) {
-      console.error('Error fetching BillDesk data:', e);
+      console.error('Error fetching held carts:', e);
     }
-  };
+  }, []);
 
-  // Check Auth on initial load
+  // Trigger ONLY the API needed for the currently active tab
+  const lastFetchedTabRef = useRef<string | null>(null);
   useEffect(() => {
+    if (!currentUser) return;
+
+    if (lastFetchedTabRef.current === activeTab) return;
+    lastFetchedTabRef.current = activeTab;
+
+    if (activeTab === 'pos' || activeTab === 'inventory') {
+      fetchCatalog();
+    } else if (activeTab === 'customers') {
+      fetchCustomers();
+    } else if (activeTab === 'settings') {
+      fetchSettings();
+    }
+    // 'history' and 'dashboard' fetch their own respective endpoints internally on mount
+  }, [activeTab, Boolean(currentUser), fetchCatalog, fetchCustomers, fetchSettings]);
+
+  // Fetch held carts ONLY when the held drawer is opened
+  const lastHeldFetchedOpenRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (isHeldDrawerOpen && currentUser && !lastHeldFetchedOpenRef.current) {
+      lastHeldFetchedOpenRef.current = true;
+      fetchHeldCarts();
+    } else if (!isHeldDrawerOpen) {
+      lastHeldFetchedOpenRef.current = false;
+    }
+  }, [isHeldDrawerOpen, Boolean(currentUser), fetchHeldCarts]);
+
+  // Auth Initialization (Runs once on mount)
+  const isAuthInitRef = useRef(false);
+  useEffect(() => {
+    if (isAuthInitRef.current) return;
+    isAuthInitRef.current = true;
+
     const initAuth = async () => {
       try {
         setIsAuthChecking(true);
         const user = await fetchCurrentUser();
         if (user) {
           setCurrentUser(user);
-          await fetchAllData();
+          if (user.tenant) {
+            setShopSettings(user.tenant);
+          }
         } else {
           setCurrentUser(null);
           setIsLoginModalOpen(true);
@@ -101,7 +180,9 @@ export default function BillDeskApp() {
     const handleAuthChanged = (e: any) => {
       if (e.detail?.user) {
         setCurrentUser(e.detail.user);
-        fetchAllData();
+        if (e.detail.user.tenant) {
+          setShopSettings(e.detail.user.tenant);
+        }
       } else {
         setCurrentUser(null);
         setIsLoginModalOpen(true);
@@ -110,17 +191,35 @@ export default function BillDeskApp() {
 
     const cleanupOffline = initOfflineSync(apiRequest);
 
-    const handleRefreshMaster = () => {
-      fetchAllData();
+    // Listen to local product stock updates (from sales/deductions)
+    const handleProductsUpdated = (e: any) => {
+      if (Array.isArray(e.detail?.products)) {
+        setProducts(e.detail.products);
+      }
     };
 
-    window.addEventListener('billo:refresh-master-data', handleRefreshMaster);
-    window.addEventListener('billo:local-stock-updated', handleRefreshMaster);
+    window.addEventListener('billo:products-updated', handleProductsUpdated);
+    window.addEventListener('billdesk:unauthorized', handleUnauthorized);
+    window.addEventListener('billdesk:auth-changed', handleAuthChanged);
+
+    // Idle Detection: If cashier doesn't perform actions for 4 seconds,
+    // sync updated product stock from the server in the background
+    const cleanupIdleSync = initIdleStockSync(async () => {
+      try {
+        const res = await apiRequest('/api/products');
+        if (res.success && Array.isArray(res.data)) {
+          return res.data;
+        }
+      } catch (err) {
+        console.warn('Background idle product sync error:', err);
+      }
+      return null;
+    }, 4000);
 
     return () => {
       cleanupOffline();
-      window.removeEventListener('billo:refresh-master-data', handleRefreshMaster);
-      window.removeEventListener('billo:local-stock-updated', handleRefreshMaster);
+      cleanupIdleSync();
+      window.removeEventListener('billo:products-updated', handleProductsUpdated);
       window.removeEventListener('billdesk:unauthorized', handleUnauthorized);
       window.removeEventListener('billdesk:auth-changed', handleAuthChanged);
     };
@@ -151,8 +250,11 @@ export default function BillDeskApp() {
 
   const handleLoginSuccess = async (user: AuthUser) => {
     setCurrentUser(user);
+    if (user.tenant) {
+      setShopSettings(user.tenant);
+    }
     setIsLoginModalOpen(false);
-    await fetchAllData();
+    fetchCatalog();
   };
 
   // Hold / Park Cart Action
@@ -178,10 +280,7 @@ export default function BillDeskApp() {
 
     if (res.success) {
       setActiveCartItems([]);
-      const heldRes = await apiRequest('/api/held');
-      if (heldRes.success && Array.isArray(heldRes.data)) {
-        setHeldCarts(heldRes.data);
-      }
+      fetchHeldCarts();
     } else {
       alert(`Could not park cart: ${res.error?.message}`);
     }
@@ -203,11 +302,7 @@ export default function BillDeskApp() {
         setActiveCartItems(restored);
         setActiveTab('pos');
       }
-
-      const heldRes = await apiRequest('/api/held');
-      if (heldRes.success && Array.isArray(heldRes.data)) {
-        setHeldCarts(heldRes.data);
-      }
+      fetchHeldCarts();
     }
   };
 
@@ -215,10 +310,7 @@ export default function BillDeskApp() {
   const handleDiscardCart = async (cartId: string) => {
     const res = await apiRequest(`/api/held/${cartId}`, { method: 'DELETE' });
     if (res.success) {
-      const heldRes = await apiRequest('/api/held');
-      if (heldRes.success && Array.isArray(heldRes.data)) {
-        setHeldCarts(heldRes.data);
-      }
+      fetchHeldCarts();
     }
   };
 
@@ -253,8 +345,9 @@ export default function BillDeskApp() {
   if (isAuthChecking && !currentUser) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center h-screen bg-[#FAFAF9] text-[#78716C] font-sans">
-        <div className="w-8 h-8 rounded-full border-2 border-[#C2410C] border-t-transparent animate-spin mb-3" />
-        <p className="text-xs font-semibold text-[#1C1917]">Starting BillDesk POS...</p>
+        <div className="w-9 h-9 rounded-full border-2 border-[#C2410C] border-t-transparent animate-spin mb-3 shadow-xs" />
+        <p className="text-sm font-semibold text-[#1C1917]">Starting BillDesk POS...</p>
+        <p className="text-xs text-[#78716C] mt-1 font-mono">Fetching catalog & caching product stock...</p>
       </div>
     );
   }
@@ -286,7 +379,8 @@ export default function BillDeskApp() {
             products={products}
             categories={categories}
             customers={customers}
-            refreshData={fetchAllData}
+            refreshData={fetchCatalog}
+            onRequestCustomers={fetchCustomers}
             onParkCart={handleParkCart}
             activeCartItems={activeCartItems}
             setActiveCartItems={setActiveCartItems}
@@ -299,7 +393,7 @@ export default function BillDeskApp() {
           <InventoryView
             products={products}
             categories={categories}
-            refreshData={fetchAllData}
+            refreshData={fetchCatalog}
             currentUser={currentUser}
             shopSettings={shopSettings}
           />
@@ -308,7 +402,7 @@ export default function BillDeskApp() {
         {activeTab === 'customers' && (
           <CustomersView
             customers={customers}
-            refreshData={fetchAllData}
+            refreshData={fetchCustomers}
             shopName={shopSettings?.name || currentUser?.tenant?.name || 'Shree Ganesh Supermarket'}
           />
         )}
@@ -322,7 +416,7 @@ export default function BillDeskApp() {
         {activeTab === 'settings' && (
           <SettingsView
             shopSettings={shopSettings}
-            refreshSettings={fetchAllData}
+            refreshSettings={fetchSettings}
             currentUser={currentUser}
           />
         )}

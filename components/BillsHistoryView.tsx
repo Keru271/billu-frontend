@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Receipt, Printer, Search, RefreshCw } from 'lucide-react';
 import { apiRequest, AuthUser } from '../lib/api';
 import ReceiptModal from './ReceiptModal';
@@ -18,10 +18,13 @@ export default function BillsHistoryView({ shopSettings, currentUser }: BillsHis
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReceiptData, setSelectedReceiptData] = useState<BillReceiptData | null>(null);
 
+  const lastFetchedFilterRef = useRef<string | null>(null);
+
   const fetchBills = async () => {
     try {
       setIsLoading(true);
       const query = statusFilter !== 'all' ? `?status=${statusFilter}` : '';
+      lastFetchedFilterRef.current = statusFilter;
       const res = await apiRequest(`/api/bills${query}`);
       if (res.success && Array.isArray(res.data)) {
         setBills(res.data);
@@ -34,6 +37,8 @@ export default function BillsHistoryView({ shopSettings, currentUser }: BillsHis
   };
 
   useEffect(() => {
+    if (lastFetchedFilterRef.current === statusFilter) return;
+    lastFetchedFilterRef.current = statusFilter;
     fetchBills();
   }, [statusFilter]);
 

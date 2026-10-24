@@ -23,8 +23,15 @@ import { calculateDenominations } from '../lib/denominations';
 import ReturnChangeModal from './ReturnChangeModal';
 import UpiModal from './UpiModal';
 import ReceiptModal from './ReceiptModal';
-import { BillReceiptData, printThermalReceipt } from '../lib/receipt';
+import {
+  BillReceiptData,
+  printThermalReceipt,
+  printReceiptImmediate,
+  getNextEstimatedBillNo,
+  setLastKnownBillNo,
+} from '../lib/receipt';
 import { createAndQueueOfflineBill } from '../lib/offlineSync';
+import { deductProductStockLocally } from '../lib/productStore';
 
 export interface Product {
   id: string;
@@ -67,6 +74,7 @@ interface POSBillingProps {
   categories: CategoryItem[];
   customers: Customer[];
   refreshData: () => Promise<void>;
+  onRequestCustomers?: () => Promise<void>;
   onParkCart: (labelOrItems?: any) => void;
   activeCartItems: CartItem[];
   setActiveCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
@@ -79,6 +87,7 @@ export default function POSBilling({
   categories,
   customers,
   refreshData,
+  onRequestCustomers,
   onParkCart,
   activeCartItems,
   setActiveCartItems,
@@ -259,6 +268,13 @@ export default function POSBilling({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [returnChangeData.isOpen, upiModalData.isOpen, receiptModalData.isOpen]);
+
+  // Fetch customers on-demand ONLY when the Customer Selection Modal is opened
+  useEffect(() => {
+    if (isCustomerModalOpen && onRequestCustomers) {
+      onRequestCustomers();
+    }
+  }, [isCustomerModalOpen, onRequestCustomers]);
 
   // Audio feedback for barcode scanning & additions (DESIGN.md 5.1)
   const playBarcodeBeep = () => {
@@ -455,6 +471,172 @@ export default function POSBilling({
       });
     }
 
+    // For direct Pay & Print (CASH or SPLIT), DO NOT wait for API.
+    // 1. Build receipt and trigger thermal/bluetooth printing immediately.
+    // 2. Open Change/Receipt modal immediately.
+    // 3. Clear cart immediately.
+    // 4. Save to API in the background.
+    if (paymentMethod === 'CASH' || paymentMethod === 'SPLIT') {
+      const nextBillNo = getNextEstimatedBillNo();
+      const nowStr = new Date().toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+
+      const receiptItems = activeCartItems.map((i) => {
+        const prodDiscountPct = i.product.discountPct || 0;
+        const unitDiscountPaise = Math.round((i.product.pricePaise * prodDiscountPct) / 100);
+        const effectiveUnitPrice = i.product.pricePaise - unitDiscountPaise;
+        const allowOverride = shopSettings?.allowProductGstOverride ?? true;
+        const storeDefaultTax = Number(shopSettings?.defaultTax ?? 0);
+        const effectiveTaxPct = allowOverride
+          ? (i.product.taxPct !== undefined && i.product.taxPct !== null ? Number(i.product.taxPct) : storeDefaultTax)
+          : storeDefaultTax;
+        return {
+          name: i.product.name,
+          qty: i.qty,
+          pricePaise: effectiveUnitPrice,
+          taxPct: effectiveTaxPct,
+        };
+      });
+
+      const receiptData: BillReceiptData = {
+        shopName: shopSettings?.name || 'Shree Ganesh Supermarket',
+        shopAddress: shopSettings?.address,
+        shopPhone: shopSettings?.phone,
+        gstin: shopSettings?.gstin,
+        billNo: nextBillNo,
+        date: nowStr,
+        cashierName: currentUser?.name || 'Counter 01',
+        customerName: selectedCustomer?.name || null,
+        customerPhone: selectedCustomer?.phone || null,
+        items: receiptItems,
+        subtotalPaise,
+        discountPaise,
+        taxPaise: totalTaxPaise,
+        cgstPaise,
+        sgstPaise,
+        roundOffPaise,
+        totalPaise: grandTotalPaise,
+        priceIncludesTax,
+        payments: paymentsPayload,
+      };
+
+      // 1. DO THE PRINTING FIRST (IMMEDIATELY WITHOUT WAITING FOR API)
+      void printReceiptImmediate(receiptData);
+
+      // 2. Immediately calculate change and present ReturnChangeModal or ReceiptModal
+      const cashPayment = paymentsPayload.find((p: any) => p.method === 'CASH');
+      const received = cashPayment?.cashReceivedPaise || (cashReceivedPaise > 0 ? cashReceivedPaise : grandTotalPaise);
+      const change = received - (cashPayment?.amountPaise || grandTotalPaise);
+
+      if (paymentMethod === 'CASH') {
+        setReturnChangeData({
+          isOpen: true,
+          billNo: nextBillNo,
+          totalPaise: grandTotalPaise,
+          cashReceivedPaise: received,
+          changeGivenPaise: change,
+          receiptData,
+        });
+      } else {
+        setReceiptModalData({
+          isOpen: true,
+          data: receiptData,
+        });
+      }
+
+      // Snapshot items and payload before resetting cart
+      const cartItemsSnapshot = [...activeCartItems];
+      const payload = {
+        items: cartItemsSnapshot.map((i) => ({
+          productId: i.product.id,
+          qty: i.qty,
+        })),
+        customerId: selectedCustomer?.id || null,
+        customerName: selectedCustomer?.name || null,
+        phone: selectedCustomer?.phone || null,
+        discountPaise,
+        payments: paymentsPayload,
+      };
+
+      // 3. Deduct sold stock locally immediately so POS catalog updates with zero delay!
+      deductProductStockLocally(
+        cartItemsSnapshot.map((i) => ({ productId: i.product.id, qty: i.qty }))
+      );
+
+      // 4. Reset cart immediately so cashier is ready for next customer
+      setActiveCartItems([]);
+      setDiscountPaise(0);
+      setDiscountInput('');
+      setCashReceivedInput('');
+      setSelectedCustomer(null);
+      setMobileTab('catalog');
+
+      // 5. Send API request in background
+      (async () => {
+        try {
+          if (typeof navigator !== 'undefined' && !navigator.onLine) {
+            createAndQueueOfflineBill(payload, {
+              subtotalPaise,
+              discountPaise,
+              totalTaxPaise,
+              grandTotalPaise,
+              cartItems: cartItemsSnapshot,
+            });
+          } else {
+            const res = await apiRequest('/api/bills', {
+              method: 'POST',
+              body: JSON.stringify(payload),
+            });
+
+            if (res.success && res.data) {
+              const serverBillNo = res.data.billNo;
+              if (serverBillNo) {
+                setLastKnownBillNo(serverBillNo);
+                setReturnChangeData((prev) =>
+                  prev.isOpen
+                    ? {
+                        ...prev,
+                        billNo: serverBillNo,
+                        receiptData: prev.receiptData
+                          ? { ...prev.receiptData, billNo: serverBillNo }
+                          : null,
+                      }
+                    : prev
+                );
+              }
+            } else {
+              // Seamless offline queue on failure
+              createAndQueueOfflineBill(payload, {
+                subtotalPaise,
+                discountPaise,
+                totalTaxPaise,
+                grandTotalPaise,
+                cartItems: cartItemsSnapshot,
+              });
+            }
+          }
+          await refreshData();
+        } catch (err) {
+          console.error('Background bill creation failed, queued offline:', err);
+          createAndQueueOfflineBill(payload, {
+            subtotalPaise,
+            discountPaise,
+            totalTaxPaise,
+            grandTotalPaise,
+            cartItems: cartItemsSnapshot,
+          });
+        }
+      })();
+
+      return;
+    }
+
+    // Fallback for UPI Payment Flow (needs billId & QR generated)
     try {
       setIsSubmitting(true);
       const payload = {
@@ -470,9 +652,7 @@ export default function POSBilling({
       };
 
       let bill: any = null;
-      let isOfflineSale = false;
 
-      // If browser is already offline, queue immediately without waiting for timeout
       if (typeof navigator !== 'undefined' && !navigator.onLine) {
         bill = createAndQueueOfflineBill(payload, {
           subtotalPaise,
@@ -481,7 +661,6 @@ export default function POSBilling({
           grandTotalPaise,
           cartItems: activeCartItems,
         });
-        isOfflineSale = true;
       } else {
         const res = await apiRequest('/api/bills', {
           method: 'POST',
@@ -491,7 +670,6 @@ export default function POSBilling({
         if (res.success && res.data) {
           bill = res.data;
         } else {
-          // If network error occurred, seamlessly store offline
           const isNetworkErr =
             typeof navigator !== 'undefined' &&
             (!navigator.onLine || /network|failed to fetch|abort|connection/i.test(res.error?.message || ''));
@@ -504,7 +682,6 @@ export default function POSBilling({
               grandTotalPaise,
               cartItems: activeCartItems,
             });
-            isOfflineSale = true;
           } else {
             alert(`Checkout Error: ${res.error?.message || 'Transaction failed'}`);
             return;
@@ -565,33 +742,14 @@ export default function POSBilling({
       setMobileTab('catalog');
       await refreshData();
 
-      // Branch to appropriate modal based on payment type
-      if (paymentMethod === 'CASH') {
-        const cashPayment = bill.payments?.find((p: any) => p.method === 'CASH');
-        setReturnChangeData({
-          isOpen: true,
-          billNo: bill.billNo,
-          totalPaise: grandTotalPaise,
-          cashReceivedPaise: cashPayment?.cashReceivedPaise || cashReceivedPaise,
-          changeGivenPaise: cashPayment?.changeGivenPaise || changeGivenPaise,
-          receiptData,
-        });
-      } else if (paymentMethod === 'UPI' || bill.status === 'PENDING_PAYMENT') {
-        setUpiModalData({
-          isOpen: true,
-          billId: bill.id,
-          billNo: bill.billNo,
-          totalPaise: grandTotalPaise,
-          upiUri: bill.upiUri,
-          receiptData,
-        });
-      } else {
-        // Split or completed sale
-        setReceiptModalData({
-          isOpen: true,
-          data: receiptData,
-        });
-      }
+      setUpiModalData({
+        isOpen: true,
+        billId: bill.id,
+        billNo: bill.billNo,
+        totalPaise: grandTotalPaise,
+        upiUri: bill.upiUri,
+        receiptData,
+      });
     } catch (e: any) {
       alert(`Checkout failed: ${e?.message}`);
     } finally {
@@ -601,6 +759,23 @@ export default function POSBilling({
 
   // Confirm UPI callback
   const handleConfirmUpi = async (billId: string, utr?: string) => {
+    // Print receipt first without waiting for confirm API!
+    if (upiModalData.receiptData) {
+      void printReceiptImmediate(upiModalData.receiptData);
+
+      // Deduct sold stock locally immediately
+      if (Array.isArray(upiModalData.receiptData.items)) {
+        const soldItems = upiModalData.receiptData.items
+          .map((i) => {
+            const prod = products.find((p) => p.name === i.name);
+            return { productId: prod?.id || '', qty: i.qty };
+          })
+          .filter((i) => Boolean(i.productId));
+        if (soldItems.length > 0) {
+          deductProductStockLocally(soldItems);
+        }
+      }
+    }
     const res = await apiRequest(`/api/bills/${billId}/confirm-upi`, {
       method: 'POST',
       body: JSON.stringify({ upiRef: utr }),
@@ -650,7 +825,9 @@ export default function POSBilling({
       setIsCustomerModalOpen(false);
       setNewCustomerName('');
       setNewCustomerPhone('');
-      await refreshData();
+      if (onRequestCustomers) {
+        await onRequestCustomers();
+      }
     }
   };
 

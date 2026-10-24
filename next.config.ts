@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  reactStrictMode: false,
   turbopack: {
     rules: {
       '*.css': {
@@ -8,16 +9,6 @@ const nextConfig: NextConfig = {
         as: '*.css',
       },
     },
-  },
-  async rewrites() {
-    const backendUrl =
-      process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5050';
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl}/api/:path*`,
-      },
-    ];
   },
 };
 

@@ -1,5 +1,18 @@
 // API Client for BillDesk Retail POS
 
+export const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://83cju1xtab.execute-api.ap-south-1.amazonaws.com'
+).replace(/\/$/, '');
+
+export function getApiUrl(path: string): string {
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return `${API_BASE_URL}${cleanPath}`;
+}
+
 export interface UserPermissions {
   discountLimit?: number; // max % discount, e.g. 10
   priceChange?: boolean;
@@ -69,7 +82,7 @@ export async function login(
   password: string
 ): Promise<{ success: boolean; data?: { token: string; user: AuthUser }; error?: { message: string } }> {
   try {
-    const res = await fetch('/api/auth/login', {
+    const res = await fetch(getApiUrl('/api/auth/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.trim(), password }),
@@ -114,7 +127,7 @@ export async function register(
   payload: RegisterPayload
 ): Promise<{ success: boolean; data?: { token: string; user: AuthUser }; error?: { message: string } }> {
   try {
-    const res = await fetch('/api/auth/register', {
+    const res = await fetch(getApiUrl('/api/auth/register'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -149,50 +162,64 @@ export async function register(
   }
 }
 
+let activeMePromise: Promise<AuthUser | null> | null = null;
+
 export async function fetchCurrentUser(): Promise<AuthUser | null> {
   const token = getToken();
   if (!token) return null;
 
-  try {
-    const res = await fetch('/api/auth/me', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  if (activeMePromise) {
+    return activeMePromise;
+  }
 
-    if (res.status === 401) {
-      clearToken();
-      return null;
-    }
+  activeMePromise = (async () => {
+    try {
+      const res = await fetch(getApiUrl('/api/auth/me'), {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const json = await res.json();
-    if (json.success && json.data) {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('billdesk_user', JSON.stringify(json.data));
+      if (res.status === 401) {
+        clearToken();
+        return null;
       }
-      return json.data as AuthUser;
-    }
-    return null;
-  } catch (err) {
-    console.warn('Network offline or error fetching current user, reading from cache:', err);
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem('billdesk_user');
-      if (cached) {
-        try {
-          return JSON.parse(cached) as AuthUser;
-        } catch {
-          // ignore
+
+      const json = await res.json();
+      if (json.success && json.data) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('billdesk_user', JSON.stringify(json.data));
+        }
+        return json.data as AuthUser;
+      }
+      return null;
+    } catch (err) {
+      console.warn('Network offline or error fetching current user, reading from cache:', err);
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('billdesk_user');
+        if (cached) {
+          try {
+            return JSON.parse(cached) as AuthUser;
+          } catch {
+            // ignore
+          }
         }
       }
+      return null;
+    } finally {
+      activeMePromise = null;
     }
-    return null;
-  }
+  })();
+
+  return activeMePromise;
 }
 
 export async function ensureAuth(): Promise<string> {
   return getToken() || '';
 }
+
+const inFlightGetRequests = new Map<string, Promise<any>>();
 
 export async function apiRequest<T = any>(
   endpoint: string,
@@ -201,79 +228,106 @@ export async function apiRequest<T = any>(
   const token = getToken();
   const isGet = !options.method || options.method.toUpperCase() === 'GET';
 
-  const headers: Record<string, string> = {
-    ...(options.headers as Record<string, string>),
-  };
-
-  if (
-    options.body &&
-    !headers['Content-Type'] &&
-    !(typeof FormData !== 'undefined' && options.body instanceof FormData)
-  ) {
-    headers['Content-Type'] = 'application/json';
-  }
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  // If navigator is explicitly offline and it's a GET request, serve immediately from cache!
-  if (typeof window !== 'undefined' && !navigator.onLine && isGet) {
-    const cached = localStorage.getItem(`billo_cache_${endpoint}`);
-    if (cached) {
-      try {
-        return { success: true, data: JSON.parse(cached), fromCache: true };
-      } catch (e) {
-        // ignore
-      }
+  // Invalidate in-flight / cached GET if a mutation occurs on this resource
+  if (!isGet) {
+    inFlightGetRequests.delete(endpoint);
+  } else {
+    // Deduplicate identical in-flight and rapid-fire (<200ms) GET requests
+    const existing = inFlightGetRequests.get(endpoint);
+    if (existing) {
+      return existing;
     }
   }
 
-  try {
-    const res = await fetch(endpoint, {
-      ...options,
-      headers,
-    });
+  const run = async () => {
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
+    };
 
-    // Handle 401 Unauthorized (expired or invalid token)
-    if (res.status === 401) {
-      clearToken();
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('billdesk:unauthorized'));
-      }
-      return {
-        success: false,
-        error: { message: 'Session expired. Please log in again.' },
-      };
+    if (
+      options.body &&
+      !headers['Content-Type'] &&
+      !(typeof FormData !== 'undefined' && options.body instanceof FormData)
+    ) {
+      headers['Content-Type'] = 'application/json';
     }
 
-    const json = await res.json();
-    if (res.ok && json.success && json.data && isGet && typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(`billo_cache_${endpoint}`, JSON.stringify(json.data));
-      } catch {
-        // quota limit
-      }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
-    return json;
-  } catch (err: any) {
-    // If GET request failed due to offline/network error, fallback to cache
-    if (isGet && typeof window !== 'undefined') {
+
+    // If navigator is explicitly offline and it's a GET request, serve immediately from cache!
+    if (typeof window !== 'undefined' && !navigator.onLine && isGet) {
       const cached = localStorage.getItem(`billo_cache_${endpoint}`);
       if (cached) {
         try {
           return { success: true, data: JSON.parse(cached), fromCache: true };
-        } catch {
+        } catch (e) {
           // ignore
         }
       }
     }
 
-    return {
-      success: false,
-      error: { message: err?.message || 'Network request failed' },
-    };
+    try {
+      const res = await fetch(getApiUrl(endpoint), {
+        ...options,
+        headers,
+      });
+
+      // Handle 401 Unauthorized (expired or invalid token)
+      if (res.status === 401) {
+        clearToken();
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('billdesk:unauthorized'));
+        }
+        return {
+          success: false,
+          error: { message: 'Session expired. Please log in again.' },
+        };
+      }
+
+      const json = await res.json();
+      if (res.ok && json.success && json.data && isGet && typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(`billo_cache_${endpoint}`, JSON.stringify(json.data));
+        } catch {
+          // quota limit
+        }
+      }
+      return json;
+    } catch (err: any) {
+      // If GET request failed due to offline/network error, fallback to cache
+      if (isGet && typeof window !== 'undefined') {
+        const cached = localStorage.getItem(`billo_cache_${endpoint}`);
+        if (cached) {
+          try {
+            return { success: true, data: JSON.parse(cached), fromCache: true };
+          } catch {
+            // ignore
+          }
+        }
+      }
+
+      return {
+        success: false,
+        error: { message: err?.message || 'Network request failed' },
+      };
+    } finally {
+      if (isGet) {
+        // Retain for 200ms to absorb simultaneous/microtask double triggers before clearing
+        setTimeout(() => {
+          inFlightGetRequests.delete(endpoint);
+        }, 200);
+      }
+    }
+  };
+
+  const reqPromise = run();
+  if (isGet) {
+    inFlightGetRequests.set(endpoint, reqPromise);
   }
+
+  return reqPromise;
 }
 
 export interface UploadResult {

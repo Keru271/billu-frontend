@@ -57,32 +57,14 @@ export function getNextOfflineBillNo(): number {
   }
 }
 
+import { deductProductStockLocally } from './productStore';
+
 /**
  * Deduct stock from the locally cached products in localStorage
  * so that while offline, product catalog stock stays accurate
  */
 export function deductLocalCachedStock(cartItems: Array<{ productId: string; qty: number }>): void {
-  if (typeof window === 'undefined') return;
-  try {
-    const cachedProdsRaw = localStorage.getItem('billo_cache_/api/products');
-    if (!cachedProdsRaw) return;
-
-    const products = JSON.parse(cachedProdsRaw);
-    if (!Array.isArray(products)) return;
-
-    for (const item of cartItems) {
-      const prod = products.find((p: any) => p.id === item.productId);
-      if (prod && typeof prod.stock === 'number') {
-        prod.stock = Math.max(0, prod.stock - item.qty);
-        prod.isLowStock = prod.stock <= (prod.reorderLevel || 5);
-      }
-    }
-
-    localStorage.setItem('billo_cache_/api/products', JSON.stringify(products));
-    window.dispatchEvent(new CustomEvent('billo:local-stock-updated'));
-  } catch (e) {
-    console.warn('Failed to update local cached stock:', e);
-  }
+  deductProductStockLocally(cartItems);
 }
 
 /**

@@ -191,18 +191,17 @@ export default function ReceiptModal({ isOpen, onClose, data }: ReceiptModalProp
 
           <div className="text-center text-[11px] font-medium text-[#78716C] my-2 space-y-0.5">
             <div className="font-semibold text-[#1C1917]">Instagram: @thecaramelpan</div>
-            <div>Thank you! Please visit us again.</div>
+            <div>Thank you! visit us again.</div>
           </div>
         </div>
 
         {/* Bluetooth status feedback if present */}
         {btStatus && (
           <div
-            className={`mt-2.5 p-2.5 rounded-lg text-xs flex items-center space-x-2 animate-fadeIn ${
-              btStatus.type === 'success'
+            className={`mt-2.5 p-2.5 rounded-lg text-xs flex items-center space-x-2 animate-fadeIn ${btStatus.type === 'success'
                 ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                 : 'bg-amber-50 text-amber-800 border border-amber-200'
-            }`}
+              }`}
           >
             {btStatus.type === 'success' ? (
               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
